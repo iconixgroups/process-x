@@ -1,0 +1,177 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: processx-backend
+  labels:
+    app: processx-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: processx-backend
+  template:
+    metadata:
+      labels:
+        app: processx-backend
+    spec:
+      containers:
+      - name: processx-backend
+        image: processx/backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: processx-db-credentials
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: processx-redis-credentials
+              key: redis-url
+        - name: OAUTH_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: processx-oauth-credentials
+              key: client-id
+        - name: OAUTH_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: processx-oauth-credentials
+              key: client-secret
+        - name: EMAIL_SERVICE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: processx-email-service-credentials
+              key: api-key
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: processx-jwt-credentials
+              key: secret-key
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      imagePullSecrets:
+      - name: regcred
+      volumes:
+      - name: processx-static-files
+        persistentVolumeClaim:
+          claimName: processx-static-pvc
+      - name: processx-media-files
+        persistentVolumeClaim:
+          claimName: processx-media-pvc
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: processx-backend
+spec:
+  selector:
+    app: processx-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer
+--- 
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: processx-ingress
+spec:
+  rules:
+  - host: api.processx.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: processx-backend
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - api.processx.com
+    secretName: processx-tls
+--- 
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: processx-static-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+--- 
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: processx-media-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+--- 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: processx-db-credentials
+type: Opaque
+data:
+  database-url: <base64-encoded-database-url>
+--- 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: processx-redis-credentials
+type: Opaque
+data:
+  redis-url: <base64-encoded-redis-url>
+--- 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: processx-oauth-credentials
+type: Opaque
+data:
+  client-id: <base64-encoded-client-id>
+  client-secret: <base64-encoded-client-secret>
+--- 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: processx-email-service-credentials
+type: Opaque
+data:
+  api-key: <base64-encoded-email-service-api-key>
+--- 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: processx-jwt-credentials
+type: Opaque
+data:
+  secret-key: <base64-encoded-jwt-secret-key>

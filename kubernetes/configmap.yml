@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: processx-config
+  namespace: processx
+data:
+  BASE_URL: "https://api.processx.com/v1"
+  API_VERSION: "v1"
+  DATABASE_URL: "postgres://username:password@postgres:5432/processx"
+  MONGODB_URI: "mongodb://username:password@mongo:27017/processx"
+  OAUTH_GOOGLE_CLIENT_ID: "your-google-client-id"
+  OAUTH_GOOGLE_CLIENT_SECRET: "your-google-client-secret"
+  JWT_SECRET_KEY: "your-jwt-secret-key"
+  SENDGRID_API_KEY: "your-sendgrid-api-key"
+  EMAIL_SERVICE_PROVIDER: "SendGrid" # or "Amazon SES"
+  FRONTEND_TECHNOLOGY: "React" # or "Vue.js"
+  BACKEND_TECHNOLOGY: "Node.js" # or "Django"
+  DATABASE_TYPE_SQL: "PostgreSQL"
+  DATABASE_TYPE_NOSQL: "MongoDB"
+  EMAIL_VERIFICATION_TEMPLATE: "email-verification-template-id"
+  DASHBOARD_DATA_CACHE: "Redis" # or "Memcached"
+  LOAD_BALANCER_TECHNOLOGY: "Nginx" # or "HAProxy"
+  DATABASE_OPTIMIZATION_STRATEGY: "Indexing" # or "Sharding"
