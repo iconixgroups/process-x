@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - BASE_URL=https://api.processx.com/v1
+    networks:
+      - processx-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - cache
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/processx
+      - CACHE_URL=redis://cache:6379
+    networks:
+      - processx-network
+
+  db:
+    image: postgres:latest
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=processx
+    networks:
+      - processx-network
+
+  cache:
+    image: redis:latest
+    networks:
+      - processx-network
+
+networks:
+  processx-network:
+    driver: bridge
+
+volumes:
+  pgdata:
