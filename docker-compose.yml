@@ -1,31 +1,18 @@
 version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    environment:
-      - BASE_URL=https://api.processx.com/v1
-    networks:
-      - processx-network
-
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
-    depends_on:
-      - db
-      - cache
+      - "8000:8000"  # Adjusted to match the Docker run command and the Dockerfile's EXPOSE
     environment:
       - DATABASE_URL=postgres://postgres:password@db:5432/processx
       - CACHE_URL=redis://cache:6379
+    depends_on:
+      - db
+      - cache
     networks:
       - processx-network
 

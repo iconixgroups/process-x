@@ -15,8 +15,7 @@
 
 <script>
 import axios from 'axios';
-import { BASE_URL } from '../../api/auth.js';
-
+import { BASE_URL } from '../api/base.js';
 export default {
   name: 'ModulePublication',
   data() {

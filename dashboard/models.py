@@ -1,4 +1,3 @@
-```python
 from django.db import models
 
 class DashboardData(models.Model):
@@ -10,4 +9,3 @@ class DashboardData(models.Model):
 
     def __str__(self):
         return f"Dashboard Data for Module: {self.moduleId}"
-```

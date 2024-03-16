@@ -1,4 +1,3 @@
-```python
 """
 WSGI config for Process X project.
 
@@ -15,4 +14,3 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 
 # Get the WSGI application for the 'Process X' project.
 application = get_wsgi_application()
-```

@@ -1,4 +1,3 @@
-```python
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
@@ -47,4 +46,3 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.email}'s profile"
-```

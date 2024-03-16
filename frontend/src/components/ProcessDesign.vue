@@ -12,7 +12,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { mxGraph, mxRubberband, mxKeyHandler, mxUtils, mxEvent } from 'mxgraph/js/mxClient';
+import * as d3 from 'd3';
 
 export default {
   name: 'ProcessDesign',
